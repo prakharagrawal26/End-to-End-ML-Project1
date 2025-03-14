@@ -6,6 +6,9 @@ from dataclasses import dataclass
 
 from src.exception import CustomException
 from src.logger import logging
+from src.components.data_transformation import DataTransformation
+from src.components.model_trainer import ModelTrainer
+
 
 @dataclass
 class DataIngestionConfig:
@@ -40,7 +43,7 @@ class DataIngestion:
             # Save the raw data
             df.to_csv(self.ingestion_config.raw_data_path, index=False, header=True)
             logging.info("Raw data saved to artifacts directory")
-
+            
             # Split the data into train and test sets
             logging.info("Train-test split initiated")
             train_set, test_set = train_test_split(df, test_size=0.2, random_state=42)
@@ -59,3 +62,17 @@ class DataIngestion:
         except Exception as e:
             logging.error("Error occurred during data ingestion")
             raise CustomException(e, sys)
+
+
+if __name__ == "__main__":
+    # Data Ingestion
+    obj = DataIngestion()
+    train_data, test_data = obj.initiate_data_ingestion()
+
+    # Data Transformation
+    data_transformation = DataTransformation()
+    train_arr, test_arr, _ = data_transformation.initiate_data_transformation(train_data, test_data)
+
+    # Model Training
+    model_trainer = ModelTrainer()
+    print(model_trainer.initiate_model_trainer(train_arr, test_arr))
