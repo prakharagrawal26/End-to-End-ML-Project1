@@ -1,0 +1,25 @@
+models:
+  - RandomForestRegressor
+  - DecisionTreeRegressor
+  - GradientBoostingRegressor
+  - XGBRegressor
+  - CatBoostRegressor
+  - AdaBoostRegressor
+  - LinearRegression
+
+hyperparameters:
+  RandomForestRegressor:
+    n_estimators: [100, 200, 300]
+    max_depth: [null, 10, 20]  # Use null instead of 'None'
+  DecisionTreeRegressor:
+    max_depth: [5, 10, null]  # Use null instead of 'None'
+  GradientBoostingRegressor:
+    n_estimators: [100, 200]
+    learning_rate: [0.01, 0.1]
+  XGBRegressor:
+    n_estimators: [100, 200]
+    learning_rate: [0.01, 0.1]
+  CatBoostRegressor:
+    depth: [4, 6, 8]
+  AdaBoostRegressor:
+    n_estimators: [50, 100]
