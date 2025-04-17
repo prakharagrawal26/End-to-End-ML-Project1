@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Exam Performance Predictor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f7fa;
+            padding: 40px;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .btn {
+            width: 100%;
+        }
+        .chart-container {
+            max-width: 500px;
+            margin: 40px auto 0;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        .chart-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+{% set input_data = input_data or {} %}
+
+<div class="form-container">
+    <h1>Student Exam Performance Predictor</h1>
+
+    <form action="{{ url_for('predict_datapoint') }}" method="post">
+        <fieldset>
+            <legend class="text-center mb-4">Enter Student Details</legend>
+
+            <div class="mb-3">
+                <label class="form-label">Gender</label>
+                <select class="form-control" name="gender" required>
+                    <option disabled value="">Select Gender</option>
+                    <option value="male" {% if input_data.get('gender') == 'male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if input_data.get('gender') == 'female' %}selected{% endif %}>Female</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Race or Ethnicity</label>
+                <select class="form-control" name="ethnicity" required>
+                    <option disabled value="">Select Ethnicity</option>
+                    {% for group in ['group A', 'group B', 'group C', 'group D', 'group E'] %}
+                    <option value="{{ group }}" {% if input_data.get('ethnicity') == group %}selected{% endif %}>{{ group|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Parental Level of Education</label>
+                <select class="form-control" name="parental_level_of_education" required>
+                    <option disabled value="">Select Education Level</option>
+                    {% set options = ["associate's degree", "bachelor's degree", "high school", "master's degree", "some college", "some high school"] %}
+                    {% for option in options %}
+                    <option value="{{ option }}" {% if input_data.get('parental_level_of_education') == option %}selected{% endif %}>{{ option|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Lunch Type</label>
+                <select class="form-control" name="lunch" required>
+                    <option disabled value="">Select Lunch Type</option>
+                    <option value="free/reduced" {% if input_data.get('lunch') == 'free/reduced' %}selected{% endif %}>Free/Reduced</option>
+                    <option value="standard" {% if input_data.get('lunch') == 'standard' %}selected{% endif %}>Standard</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Test Preparation Course</label>
+                <select class="form-control" name="test_preparation_course" required>
+                    <option disabled value="">Select Test Preparation Status</option>
+                    <option value="none" {% if input_data.get('test_preparation_course') == 'none' %}selected{% endif %}>None</option>
+                    <option value="completed" {% if input_data.get('test_preparation_course') == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Reading Score (out of 100)</label>
+                <input class="form-control" type="number" name="reading_score" placeholder="Enter Reading Score" min="0" max="100"
+                       value="{{ input_data.get('reading_score', '') }}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Writing Score (out of 100)</label>
+                <input class="form-control" type="number" name="writing_score" placeholder="Enter Writing Score" min="0" max="100"
+                       value="{{ input_data.get('writing_score', '') }}" required />
+            </div>
+
+            <div class="mb-3">
+                <button class="btn btn-primary" type="submit">Predict Maths Score</button>
+            </div>
+        </fieldset>
+    </form>
+
+    {% if results %}
+    <div class="alert alert-success mt-4 text-center" role="alert">
+        <h4>The predicted Maths score is: {{ results }}</h4>
+    </div>
+    {% endif %}
+</div>
+
+{% if plot_path %}
+<div class="chart-container mt-4">
+    <h2 class="text-center">Typical Score Distribution</h2>
+    <img src="{{ url_for('static', filename=plot_path) }}" alt="Score Distribution Chart">
+</div>
+{% endif %}
+
+</body>
+</html>

@@ -77,12 +77,6 @@ class DataTransformation:
             # Get the preprocessing object
             logging.info("Obtaining preprocessing object")
             preprocessing_obj = self.get_data_transformer_object(numerical_columns, categorical_columns)
-
-            save_object(
-                file_path=self.data_transformation_config.preprocessor_obj_file_path,
-                obj=preprocessing_obj
-            )
-            logging.info("Saved preprocessing object using pickle.")
             
             # Drop target column from the train and test dataframes, to ensure that target column is not preprocessed.
             input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
@@ -96,12 +90,14 @@ class DataTransformation:
             input_feature_train_arr = preprocessing_obj.fit_transform(input_feature_train_df)
             input_feature_test_arr = preprocessing_obj.transform(input_feature_test_df)
 
-            # Combine transformed input features with target feature, for both train and test sets
-            # Transformation pipeline returns numpy arrays, but target feature is a pandas series. 
-            # To combine them, we need to convert target feature to numpy array.
             train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]
             test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
-            
+            save_object(
+                file_path=self.data_transformation_config.preprocessor_obj_file_path,
+                obj=preprocessing_obj
+            )
+            logging.info("Saved preprocessing object using pickle.")
+                       
             logging.info("Data transformation completed successfully")
             return (
                 train_arr,
